@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editkaro.in — Edit Karo, Grow Karo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0B0D;
+    --panel:#17171B;
+    --panel-alt:#1F1F24;
+    --line:#2A2A30;
+    --text:#F2F0EA;
+    --text-dim:#8C8C93;
+    --accent-rec:#FF5B45;
+    --accent-scrub:#D4FF3F;
+
+    --c-short:#FF5B45;
+    --c-long:#4DA6FF;
+    --c-gaming:#B388FF;
+    --c-football:#34D399;
+    --c-ecom:#FFC24D;
+    --c-doc:#8B98A6;
+    --c-color:#FF8FD9;
+    --c-anime:#4DE0E0;
+    --c-ads:#FF9F4D;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Space Grotesk',sans-serif;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--accent-scrub);color:#0B0B0D;}
+
+  .display{font-family:'Bebas Neue',sans-serif;letter-spacing:0.02em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 6vw;
+    background:linear-gradient(to bottom, rgba(11,11,13,0.95), rgba(11,11,13,0));
+    backdrop-filter:blur(2px);
+  }
+  .nav-logo{
+    font-size:1.4rem; font-weight:700; display:flex; align-items:center; gap:8px;
+  }
+  .nav-logo .dot{
+    width:9px; height:9px; border-radius:50%; background:var(--accent-rec);
+    animation:blink 1.6s infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+  .nav-links{display:flex; gap:32px; font-size:0.85rem; color:var(--text-dim);}
+  .nav-links a:hover{color:var(--text);}
+  .nav-cta{
+    border:1px solid var(--line); padding:8px 18px; border-radius:2px;
+    font-size:0.8rem; letter-spacing:0.04em;
+  }
+  .nav-cta:hover{border-color:var(--accent-scrub); color:var(--accent-scrub);}
+  @media (max-width:800px){ .nav-links{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:120px 6vw 60px;
+    position:relative;
+  }
+  .hero-eyebrow{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.75rem; color:var(--accent-scrub);
+    letter-spacing:0.15em; margin-bottom:20px;
+  }
+  .hero-eyebrow::before{content:'●'; color:var(--accent-rec); animation:blink 1.6s infinite;}
+  .hero h1{
+    font-size:clamp(3.2rem, 10vw, 8.5rem);
+    line-height:0.92;
+    text-transform:uppercase;
+  }
+  .hero h1 .outline{
+    -webkit-text-stroke:2px var(--text);
+    color:transparent;
+  }
+  .hero-sub{
+    max-width:520px; margin-top:28px; color:var(--text-dim);
+    font-size:1.05rem; line-height:1.6;
+  }
+  .hero-monitor{
+    margin-top:48px;
+    border:1px solid var(--line); border-radius:6px;
+    background:var(--panel);
+    padding:14px 18px;
+    display:flex; align-items:center; justify-content:space-between;
+    max-width:640px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.78rem; color:var(--text-dim);
+  }
+  .hero-monitor .tc{color:var(--text); font-size:0.95rem; letter-spacing:0.05em;}
+  .hero-monitor .badges{display:flex; gap:14px;}
+  .hero-monitor .badges span{display:flex; align-items:center; gap:6px;}
+  .hero-monitor .rec{color:var(--accent-rec);}
+  .hero-monitor .rec::before{content:'●'; animation:blink 1.6s infinite;}
+
+  /* ---------- TIMELINE SCRUBBER (signature element) ---------- */
+  .scrubber-wrap{
+    padding:40px 6vw 60px;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    background:var(--panel);
+  }
+  .scrubber-head{
+    display:flex; justify-content:space-between; align-items:baseline; margin-bottom:22px;
+    flex-wrap:wrap; gap:10px;
+  }
+  .scrubber-head h2{
+    font-family:'Bebas Neue',sans-serif; font-size:1.4rem; letter-spacing:0.05em; color:var(--text-dim);
+  }
+  .scrubber-readout{
+    font-family:'IBM Plex Mono',monospace; font-size:0.85rem; color:var(--accent-scrub);
+  }
+  .track{
+    position:relative;
+    display:flex;
+    height:64px;
+    border-radius:4px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    border:1px solid var(--line);
+    scrollbar-width:thin;
+  }
+  .track::-webkit-scrollbar{height:5px;}
+  .track::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+  .clip-seg{
+    flex:0 0 auto;
+    min-width:130px;
+    height:100%;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:0 16px;
+    border-right:1px solid rgba(0,0,0,0.35);
+    position:relative;
+    transition:filter .2s ease, transform .15s ease;
+    opacity:0.88;
+  }
+  .clip-seg:last-child{border-right:none;}
+  .clip-seg small{
+    font-family:'IBM Plex Mono',monospace; font-size:0.65rem; color:rgba(0,0,0,0.55); letter-spacing:0.03em;
+  }
+  .clip-seg strong{
+    font-size:0.82rem; color:#0B0B0D; font-weight:700; margin-top:2px;
+  }
+  .clip-seg:hover{opacity:1; transform:translateY(-2px);}
+  .clip-seg.active{opacity:1; box-shadow:inset 0 0 0 2px rgba(11,11,13,0.6);}
+  .clip-seg.active::after{
+    content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:#0B0B0D;
+  }
+  .track-hint{
+    margin-top:10px; font-size:0.72rem; color:var(--text-dim); font-family:'IBM Plex Mono',monospace;
+  }
+
+  /* ---------- GRID ---------- */
+  .grid-section{padding:70px 6vw 100px;}
+  .grid-section-head{
+    display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:36px; flex-wrap:wrap; gap:14px;
+  }
+  .grid-section-head h2{
+    font-family:'Bebas Neue',sans-serif; font-size:2.4rem; text-transform:uppercase;
+  }
+  .clip-count{font-family:'IBM Plex Mono',monospace; color:var(--text-dim); font-size:0.85rem;}
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:22px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:transform .25s ease, border-color .25s ease;
+  }
+  .card:hover{transform:translateY(-4px); border-color:var(--card-color, var(--accent-scrub));}
+  .thumb{
+    position:relative; aspect-ratio:16/9;
+    background:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 18px),
+      linear-gradient(135deg, var(--card-color), #0B0B0D 140%);
+    background-size:220% 220%, 100% 100%;
+    background-position:0% 0%, 0 0;
+    transition:background-position 1.4s ease;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card:hover .thumb{background-position:100% 100%, 0 0;}
+  .thumb .play{
+    width:48px; height:48px; border-radius:50%;
+    background:rgba(11,11,13,0.55); border:1px solid rgba(255,255,255,0.5);
+    display:flex; align-items:center; justify-content:center;
+    transform:scale(0.9); transition:transform .2s ease, background .2s ease;
+  }
+  .card:hover .thumb .play{transform:scale(1.05); background:rgba(11,11,13,0.75);}
+  .thumb .play svg{width:16px; height:16px; margin-left:2px;}
+  .thumb .dur{
+    position:absolute; bottom:8px; right:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.68rem;
+    background:rgba(11,11,13,0.6); padding:2px 6px; border-radius:2px;
+  }
+  .thumb .tag{
+    position:absolute; top:8px; left:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.05em;
+    text-transform:uppercase; color:#0B0B0D; background:var(--card-color);
+    padding:3px 7px; border-radius:2px; font-weight:600;
+  }
+  .card-body{padding:14px 16px 18px;}
+  .card-body h3{font-size:1rem; font-weight:600; margin-bottom:4px;}
+  .card-body p{font-size:0.8rem; color:var(--text-dim);}
+
+  .hidden-card{display:none;}
+
+  /* ---------- LIGHTBOX ---------- */
+  .lightbox{
+    position:fixed; inset:0; background:rgba(11,11,13,0.92);
+    display:none; align-items:center; justify-content:center; z-index:200;
+    padding:6vw;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox-inner{
+    max-width:760px; width:100%;
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; overflow:hidden;
+  }
+  .lightbox-thumb{
+    aspect-ratio:16/9;
+    background:linear-gradient(135deg, var(--card-color), #0B0B0D 140%);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .lightbox-thumb .play-lg{
+    width:72px; height:72px; border-radius:50%; background:rgba(11,11,13,0.55);
+    border:1px solid rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox-thumb .play-lg svg{width:24px; height:24px; margin-left:3px;}
+  .lightbox-meta{padding:22px 26px 28px; display:flex; justify-content:space-between; align-items:flex-start; gap:20px;}
+  .lightbox-meta h3{font-size:1.3rem; margin-bottom:6px;}
+  .lightbox-meta p{color:var(--text-dim); font-size:0.85rem; max-width:440px;}
+  .lightbox-close{
+    font-size:0.8rem; color:var(--text-dim); border:1px solid var(--line);
+    padding:8px 14px; border-radius:2px; white-space:nowrap;
+  }
+  .lightbox-close:hover{color:var(--text); border-color:var(--text);}
+
+  /* ---------- FOOTER / CTA ---------- */
+  .cta-section{
+    padding:100px 6vw; text-align:center; border-top:1px solid var(--line);
+    background:var(--panel);
+  }
+  .cta-section h2{
+    font-family:'Bebas Neue',sans-serif; font-size:clamp(2.4rem,6vw,4.5rem); text-transform:uppercase;
+  }
+  .cta-section p{color:var(--text-dim); margin:16px auto 34px; max-width:480px;}
+  .cta-btn{
+    display:inline-block; padding:16px 38px; background:var(--accent-scrub); color:#0B0B0D;
+    font-weight:700; border-radius:2px; letter-spacing:0.03em; font-size:0.9rem;
+    transition:transform .2s ease;
+  }
+  .cta-btn:hover{transform:translateY(-3px);}
+
+  /* ---------- CONTACT ---------- */
+  .contact-wrap{
+    max-width:720px; margin:50px auto 0; text-align:left;
+    background:var(--bg); border:1px solid var(--line); border-radius:6px;
+    padding:32px 32px 34px;
+  }
+  .contact-info{
+    display:flex; flex-wrap:wrap; gap:24px; margin-bottom:28px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.8rem;
+  }
+  .contact-info a{color:var(--text); border-bottom:1px solid var(--line); padding-bottom:2px;}
+  .contact-info a:hover{color:var(--accent-scrub); border-color:var(--accent-scrub);}
+  .contact-info .label{display:block; color:var(--text-dim); font-size:0.65rem; letter-spacing:0.08em; margin-bottom:4px;}
+
+  .contact-form{display:grid; gap:16px;}
+  .form-row{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:560px){ .form-row{grid-template-columns:1fr;} }
+  .field label{
+    display:block; font-family:'IBM Plex Mono',monospace; font-size:0.68rem;
+    letter-spacing:0.08em; color:var(--text-dim); margin-bottom:6px; text-transform:uppercase;
+  }
+  .field input, .field select, .field textarea{
+    width:100%; background:var(--panel); border:1px solid var(--line); border-radius:3px;
+    color:var(--text); padding:11px 12px; font-family:'Space Grotesk',sans-serif; font-size:0.9rem;
+    transition:border-color .2s ease;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:none; border-color:var(--accent-scrub);
+  }
+  .field textarea{resize:vertical; min-height:90px;}
+  .form-submit{
+    justify-self:start; margin-top:4px;
+    display:inline-block; padding:14px 34px; background:var(--accent-scrub); color:#0B0B0D;
+    font-weight:700; border-radius:2px; letter-spacing:0.03em; font-size:0.85rem;
+    transition:transform .2s ease;
+  }
+  .form-submit:hover{transform:translateY(-2px);}
+  .form-note{font-size:0.72rem; color:var(--text-dim); margin-top:-4px;}
+
+  footer{
+    padding:32px 6vw; display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;
+    font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--text-dim);
+  }
+
+/* ===== Added Animations ===== */
+.hero h1,.hero-sub,.hero-monitor{opacity:0;transform:translateY(40px);animation:fadeUp 1s ease forwards}
+.hero-sub{animation-delay:.3s}.hero-monitor{animation-delay:.6s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+body::before{content:"";position:fixed;width:700px;height:700px;background:radial-gradient(circle,rgba(212,255,63,.08),transparent 70%);top:-250px;right:-200px;animation:floatGlow 10s ease-in-out infinite;pointer-events:none}
+@keyframes floatGlow{50%{transform:translateY(40px) translateX(-30px)}}
+.card{opacity:0;transform:translateY(50px);transition:all .7s ease}
+.card.show{opacity:1;transform:translateY(0)}
+.cta-btn,.form-submit{position:relative;overflow:hidden}
+.cta-btn::before,.form-submit::before{content:"";position:absolute;width:100%;height:100%;background:#fff;left:-100%;top:0;opacity:.15;transition:.4s}
+.cta-btn:hover::before,.form-submit:hover::before{left:100%}
+@media(max-width:768px){
+.nav{padding:15px 20px}
+.hero{padding:120px 20px 60px}
+.hero h1{font-size:58px}
+.hero-sub{font-size:16px}
+.hero-monitor{flex-direction:column;gap:10px}
+.contact-wrap{padding:20px}
+.contact-info{flex-direction:column;gap:15px}
+.form-row{grid-template-columns:1fr}
+.form-submit{width:100%}
+.track{scroll-snap-type:x mandatory}
+.clip-seg{scroll-snap-align:center}
+.lightbox{padding:20px}
+.lightbox-meta{flex-direction:column}
+}
+
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo"><span class="dot"></span> EDITKARO.IN</div>
+  <div class="nav-links">
+    <a href="#work">Work</a>
+    <a href="#work">Categories</a>
+    <a href="#book">Contact</a>
+  </div>
+  <a href="#book" class="nav-cta">Book a call</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">NOW STREAMING · SOCIAL MEDIA &amp; VIDEO EDITING AGENCY</div>
+  <h1>Edit <span class="outline">Karo.</span><br>Grow <span class="outline">Karo.</span></h1>
+  <p class="hero-sub">Editkaro.in cuts, grades and ships video across nine formats — from 15-second reels to full documentaries — for brands that need content on a broadcast clock.</p>
+
+  <div class="hero-monitor">
+    <span class="tc mono" id="liveTc">00:00:00:00</span>
+    <div class="badges">
+      <span>4K · 24FPS</span>
+      <span class="rec">REC</span>
+    </div>
+  </div>
+</section>
+
+<section class="scrubber-wrap" id="work">
+  <div class="scrubber-head">
+    <h2>TIMELINE — SELECT A TRACK TO FILTER</h2>
+    <span class="scrubber-readout mono" id="scrubReadout">ALL TRACKS</span>
+  </div>
+  <div class="track" id="track">
+    <button class="clip-seg active" data-filter="all" style="background:var(--text)">
+      <small>00 · ALL</small><strong>Full Reel</strong>
+    </button>
+    <button class="clip-seg" data-filter="short" style="background:var(--c-short)">
+      <small>01 · REELS</small><strong>Short-Form</strong>
+    </button>
+    <button class="clip-seg" data-filter="long" style="background:var(--c-long)">
+      <small>02 · YT</small><strong>Long-Form</strong>
+    </button>
+    <button class="clip-seg" data-filter="gaming" style="background:var(--c-gaming)">
+      <small>03 · GAME</small><strong>Gaming</strong>
+    </button>
+    <button class="clip-seg" data-filter="football" style="background:var(--c-football)">
+      <small>04 · SPORT</small><strong>Football</strong>
+    </button>
+    <button class="clip-seg" data-filter="ecom" style="background:var(--c-ecom)">
+      <small>05 · ADS</small><strong>eCommerce</strong>
+    </button>
+    <button class="clip-seg" data-filter="doc" style="background:var(--c-doc)">
+      <small>06 · DOC</small><strong>Documentary</strong>
+    </button>
+    <button class="clip-seg" data-filter="color" style="background:var(--c-color)">
+      <small>07 · GRADE</small><strong>Color</strong>
+    </button>
+    <button class="clip-seg" data-filter="anime" style="background:var(--c-anime)">
+      <small>08 · AMV</small><strong>Anime</strong>
+    </button>
+    <button class="clip-seg" data-filter="ads" style="background:var(--c-ads)">
+      <small>09 · BRAND</small><strong>Ads</strong>
+    </button>
+  </div>
+  <div class="track-hint">Drag / scroll the track, or tap a clip to jump the playhead below.</div>
+</section>
+
+<section class="grid-section">
+  <div class="grid-section-head">
+    <h2>The Cutting Room</h2>
+    <span class="clip-count mono"><span id="countNum">18</span> clips loaded</span>
+  </div>
+  
+<div style="max-width:1000px;margin:0 auto 35px;">
+<iframe width="100%" height="500"
+src="https://www.youtube.com/embed/UauhQsJK7h4"
+title="Featured Work"
+frameborder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+allowfullscreen
+style="border-radius:12px;border:1px solid #2A2A30;"></iframe>
+</div>
+
+  <div class="grid" id="grid"><!-- cards injected by JS --></div>
+</section>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-inner">
+    <iframe id="videoFrame" width="100%" height="450" src="" frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen></iframe>
+    <div class="lightbox-meta">
+      <div>
+        <h3 id="lbTitle"></h3>
+        <p id="lbDesc"></p>
+      </div>
+      <button class="lightbox-close" id="lbClose">CLOSE ✕</button>
+    </div>
+  </div>
+</div>
+
+<section class="cta-section" id="book">
+  <h2>Got footage?<br>Let's cut it.</h2>
+  <p>From raw clips to a scroll-stopping feed — Editkaro.in turns it around on a deadline you can actually plan around.</p>
+
+  <div class="contact-wrap">
+    <div class="contact-info">
+      <div>
+        <span class="label">EMAIL</span>
+        <a href="mailto:jimmichakma671@gmail.com">jimmichakma671@gmail.com</a>
+      </div>
+      <div>
+        <span class="label">PHONE / WHATSAPP</span>
+        <a href="tel:+919362890667">+91 93628 90667</a>
+      </div>
+      <div>
+        <span class="label">INSTAGRAM</span>
+        <a href="https://instagram.com/isthatjim" target="_blank" rel="noopener">@isthatjim</a>
+      </div>
+    </div>
+
+    <form class="contact-form" id="contactForm">
+      <div class="form-row">
+        <div class="field">
+          <label for="cf-name">Name</label>
+          <input type="text" id="cf-name" name="name" required placeholder="Your name">
+        </div>
+        <div class="field">
+          <label for="cf-email">Email</label>
+          <input type="email" id="cf-email" name="email" required placeholder="you@company.com">
+        </div>
+      </div>
+      <div class="field">
+        <label for="cf-type">Project type</label>
+        <select id="cf-type" name="type">
+          <option>Short-Form</option>
+          <option>Long-Form</option>
+          <option>Gaming</option>
+          <option>Football</option>
+          <option>eCommerce Ads</option>
+          <option>Documentary</option>
+          <option>Color Grading</option>
+          <option>Anime</option>
+          <option>Brand Ads</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="cf-msg">Project details</label>
+        <textarea id="cf-msg" name="message" placeholder="Tell us about your footage, timeline, and goals..."></textarea>
+      </div>
+      <button type="submit" class="form-submit">SEND MESSAGE →</button>
+      <p class="form-note">Opens your email client with the details pre-filled, addressed to jimmichakma671@gmail.com.</p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <span>© EDITKARO.IN — SOCIAL MEDIA &amp; VIDEO EDITING AGENCY</span>
+  <span>PORTFOLIO CONCEPT · MINI PROJECT BUILD</span>
+</footer>
+
+<script>
+  const clips = [
+    {cat:'short', color:'var(--c-short)', title:'Reel Drop — Streetwear Launch', dur:'00:00:15:02', desc:'Fast-cut vertical reel for a D2C apparel drop.'},
+    {cat:'short', color:'var(--c-short)', title:'POV: Studio Morning', dur:'00:00:22:10', desc:'Lifestyle short for an influencer daily series.'},
+    {cat:'long', color:'var(--c-long)', title:'The Founder Interview', dur:'00:18:44:00', desc:'Long-form YouTube sit-down, multi-cam edit.'},
+    {cat:'long', color:'var(--c-long)', title:'City Vlog: 48 Hours', dur:'00:12:09:00', desc:'Narrative vlog with on-screen graphics package.'},
+    {cat:'gaming', color:'var(--c-gaming)', title:'Clutch Round Montage', dur:'00:03:41:00', desc:'FPS highlight reel synced to a rising beat drop.'},
+    {cat:'gaming', color:'var(--c-gaming)', title:'Stream Recap: Week 12', dur:'00:07:20:00', desc:'Weekly Twitch recap edit with chat overlays.'},
+    {cat:'football', color:'var(--c-football)', title:'Matchday Highlights', dur:'00:04:15:00', desc:'Goals-and-tackles cutdown with broadcast lower-thirds.'},
+    {cat:'football', color:'var(--c-football)', title:'Academy Player Reel', dur:'00:02:30:00', desc:'Scouting highlight tape for a youth academy signing.'},
+    {cat:'ecom', color:'var(--c-ecom)', title:'Product Hero: Skincare', dur:'00:00:30:00', desc:'Meta-ad cut with hook, features, and CTA overlay.'},
+    {cat:'ecom', color:'var(--c-ecom)', title:'Unboxing Ad Set', dur:'00:00:45:00', desc:'A/B ad variants for a home-goods launch.'},
+    {cat:'doc', color:'var(--c-doc)', title:'Craft: The Potter\\'s Wheel', dur:'00:22:12:00', desc:'Observational documentary short, natural sound design.'},
+    {cat:'doc', color:'var(--c-doc)', title:'Rebuilding the Village Well', dur:'00:15:50:00', desc:'NGO impact documentary edit for a fundraising reel.'},
+    {cat:'color', color:'var(--c-color)', title:'Before/After: Log to Look', dur:'00:01:05:00', desc:'Cinematic grade pass on a wedding feature film.'},
+    {cat:'color', color:'var(--c-color)', title:'Night Drive Grade', dur:'00:02:44:00', desc:'Moody teal-and-amber grade for a music video.'},
+    {cat:'anime', color:'var(--c-anime)', title:'AMV: Fractured Sky', dur:'00:03:12:00', desc:'Beat-synced anime music video, custom transitions.'},
+    {cat:'anime', color:'var(--c-anime)', title:'Fan Edit: Arc Recap', dur:'00:05:30:00', desc:'Story recap edit with motion-graphics chapter cards.'},
+    {cat:'ads', color:'var(--c-ads)', title:'Brand Film: 30 Sec Spot', dur:'00:00:30:00', desc:'Broadcast-ready brand ad with voiceover mix.'},
+    {cat:'ads', color:'var(--c-ads)', title:'Festive Campaign Teaser', dur:'00:00:20:00', desc:'Seasonal campaign teaser cut for paid social.'}
+  ];
+
+  const grid = document.getElementById('grid');
+  const countNum = document.getElementById('countNum');
+
+  function renderCards(){
+    grid.innerHTML = clips.map((c,i) => `
+      <div class="card" data-cat="${c.cat}" style="--card-color:${c.color}" data-idx="${i}">
+        <div class="thumb">
+          <span class="tag">${labelFor(c.cat)}</span>
+          <span class="dur mono">${c.dur}</span>
+          <div class="play"><svg viewBox="0 0 24 24" fill="#F2F0EA"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>
+        <div class="card-body">
+          <h3>${c.title}</h3>
+          <p>${c.desc}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function labelFor(cat){
+    const map = {short:'Short-Form', long:'Long-Form', gaming:'Gaming', football:'Football',
+      ecom:'eCommerce', doc:'Documentary', color:'Color Grade', anime:'Anime', ads:'Ads'};
+    return map[cat] || cat;
+  }
+
+  renderCards();
+
+  // Filtering via timeline scrubber
+  const segs = document.querySelectorAll('.clip-seg');
+  const readout = document.getElementById('scrubReadout');
+
+  segs.forEach(seg => {
+    seg.addEventListener('click', () => {
+      segs.forEach(s => s.classList.remove('active'));
+      seg.classList.add('active');
+      const filter = seg.dataset.filter;
+      readout.textContent = filter === 'all' ? 'ALL TRACKS' : labelFor(filter).toUpperCase() + ' TRACK';
+
+      let visible = 0;
+      document.querySelectorAll('.card').forEach(card => {
+        const match = filter === 'all' || card.dataset.cat === filter;
+        card.classList.toggle('hidden-card', !match);
+        if(match) visible++;
+      });
+      countNum.textContent = visible;
+    });
+  });
+
+  // Lightbox
+  const lightbox = document.getElementById('lightbox');
+  const lbThumb = document.getElementById('lbThumb');
+  const lbTitle = document.getElementById('lbTitle');
+  const lbDesc = document.getElementById('lbDesc');
+
+  grid.addEventListener('click', (e) => {
+    const card = e.target.closest('.card');
+    if(!card) return;
+    const c = clips[card.dataset.idx];
+    lbThumb.style.background = `linear-gradient(135deg, ${c.color}, #0B0B0D 140%)`;
+    lbTitle.textContent = c.title;
+    lbDesc.textContent = c.desc + ' — ' + c.dur + ' runtime.';
+    lightbox.classList.add('open');
+  });
+
+  
+const videoURL="https://www.youtube.com/embed/UauhQsJK7h4?autoplay=1";
+grid.addEventListener('click',(e)=>{
+ const card=e.target.closest('.card');
+ if(!card)return;
+ const c=clips[card.dataset.idx];
+ document.getElementById('videoFrame').src=videoURL;
+ lbTitle.textContent=c.title;
+ lbDesc.textContent=c.desc;
+ lightbox.classList.add('open');
+});
+function closeLb(){
+ lightbox.classList.remove('open');
+ document.getElementById('videoFrame').src='';
+}
+
+  document.getElementById('lbClose').addEventListener('click', closeLb);
+  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLb(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLb(); });
+
+  // Contact form -> opens a pre-filled mailto (no backend on this static page)
+  const contactForm = document.getElementById('contactForm');
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('cf-name').value.trim();
+    const email = document.getElementById('cf-email').value.trim();
+    const type = document.getElementById('cf-type').value;
+    const message = document.getElementById('cf-msg').value.trim();
+
+    const subject = `New project inquiry — ${type}`;
+    const body =
+      `Name: ${name}\nEmail: ${email}\nProject type: ${type}\n\n${message}`;
+
+    window.location.href =
+      `mailto:jimmichakma671@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  });
+
+  // Live ticking timecode in hero monitor (cosmetic)
+  let frame = 0;
+  const tcEl = document.getElementById('liveTc');
+  function pad(n){ return n.toString().padStart(2,'0'); }
+  setInterval(() => {
+    frame++;
+    const f = frame % 24;
+    const totalSec = Math.floor(frame / 24);
+    const s = totalSec % 60;
+    const m = Math.floor(totalSec / 60) % 60;
+    const h = Math.floor(totalSec / 3600);
+    tcEl.textContent = `${pad(h)}:${pad(m)}:${pad(s)}:${pad(f)}`;
+  }, 1000/24);
+
+// Added animations
+const observer=new IntersectionObserver(entries=>{
+ entries.forEach(entry=>{if(entry.isIntersecting)entry.target.classList.add('show');});
+},{threshold:.2});
+document.querySelectorAll('.card').forEach(c=>observer.observe(c));
+
+window.addEventListener('scroll',()=>{
+ const nav=document.querySelector('.nav');
+ if(window.scrollY>50){
+   nav.style.background='rgba(11,11,13,.9)';
+   nav.style.backdropFilter='blur(12px)';
+ }else{
+   nav.style.background='';
+   nav.style.backdropFilter='';
+ }
+});
+
+</script>
+
+</body>
+</html>
